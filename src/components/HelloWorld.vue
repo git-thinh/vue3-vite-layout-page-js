@@ -1,7 +1,7 @@
 <template>
     <h1>HelloWorld</h1>
     <div>
-        <button @click="num += 1">{{ num }}++</button>
+        <button @click="counterStore.increment()">{{ counterStore.value }}++</button>
     </div>
     <br />
     <br />
@@ -9,8 +9,6 @@
 </template>
 
 <script setup>
-    import { ref } from 'vue'
-
-    const num = ref(30);
-
+    const counterStore = useCounterStore();
+    //const num = ref(30);    
 </script>

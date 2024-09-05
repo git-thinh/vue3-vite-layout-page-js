@@ -4,7 +4,7 @@
 </script>
 
 <template>
-	<TheAppLayout />
+	<LayApp />
 </template>
 
 <script>

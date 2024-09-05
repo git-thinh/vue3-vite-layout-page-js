@@ -13,11 +13,16 @@ declare module 'vue' {
     'IMdi:diceD12': typeof import('~icons/mdi/dice-d12')['default']
     IMdiLightAlarm: typeof import('~icons/mdi-light/alarm')['default']
     IRiApps2Line: typeof import('~icons/ri/apps2-line')['default']
-    ISolar: addCircleLinear\"': typeof import('~icons/solar/add-circle-linear/"')['default']
     'ISolar:addCircleLinear': typeof import('~icons/solar/add-circle-linear')['default']
-    'ISolar:addCircleLinear\"': typeof import('~icons/solar/add-circle-linear/"')['default']
+    LayApp: typeof import('./layouts/LayApp.vue')['default']
+    LayDashboard: typeof import('./layouts/LayDashboard.vue')['default']
+    LayDefault: typeof import('./layouts/LayDefault.vue')['default']
+    LayEcommerce: typeof import('./layouts/LayEcommerce.vue')['default']
     MyCustom: typeof import('./CustomResolved.vue')['default']
+    PiniaTest: typeof import('./components/PiniaTest.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    TodoForm: typeof import('./components/TodoForm.vue')['default']
+    TodoList: typeof import('./components/TodoList.vue')['default']
   }
 }

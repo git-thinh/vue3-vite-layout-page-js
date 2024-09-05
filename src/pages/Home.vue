@@ -1,5 +1,6 @@
 <template>
     <h1>Home</h1>
+    <PiniaTest/>
     <HelloWorld />
     <div class="block">
         <h1>Custom Resolvers (1)</h1>

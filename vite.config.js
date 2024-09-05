@@ -4,11 +4,18 @@ import Vue from '@vitejs/plugin-vue'
 // https://vitejs.dev/config/
 import { defineConfig } from 'vite'
 
+// https://github.com/unplugin/unplugin-auto-import
+// https://stackoverflow.com/questions/76228523/how-to-import-local-global-types-with-unplugin-auto-import
+import AutoImport from 'unplugin-auto-import/vite'
+
 // https://github.com/unplugin/unplugin-vue-components
 import Components from 'unplugin-vue-components/vite'
 
+// https://icon-sets.iconify.design/solar/add-circle-linear/
 import Icons from 'unplugin-icons/vite'
 import IconsResolver from 'unplugin-icons/resolver'
+
+import storeConfig from './src/stores/_config'
 
 const PATH_SRC = path.resolve(__dirname, 'src');
 //console.log('PATH_SRC =', PATH_SRC);
@@ -22,6 +29,7 @@ export default defineConfig({
         Icons(),
         Components({
             dirs: [
+                'layouts',
                 'components',
                 'components/**'
             ],
@@ -35,91 +43,75 @@ export default defineConfig({
                     if (name === 'MyCustom')
                         return path.resolve(__dirname, 'src/CustomResolved.vue').replaceAll('\\', '/')
                 },
-                //VantResolver(),
                 IconsResolver({
                     componentPrefix: 'i',
                 }),
             ],
+        }),
+        AutoImport({
+            // targets to transform
+            include: [
+                /\.[tj]sx?$/, // .ts, .tsx, .js, .jsx
+                /\.vue$/,
+                /\.vue\?vue/, // .vue
+                /\.md$/, // .md
+            ],
 
-            /*
-// relative paths to the directory to search for components.
-  dirs: ['src/components'],
+            // global imports to register
+            imports: [
+                // presets
+                'vue', // import { onMounted, onUnmounted, ref, computed, defineComponent } from 'vue';
+                'vue-router', // import { useRoute } from 'vue-router';
+                'pinia', // import { defineStore, acceptHMRUpdate } from 'pinia'
+                storeConfig,
+            ],
 
-  // valid file extensions for components.
-  extensions: ['vue'],
+            // Auto import for module exports under directories
+            // by default it only scan one level of modules under the directory
+            dirs: [
+                // './hooks',
+                // './composables' // only root modules
+                // './composables/**', // all nested modules
+                // ...
+            ],
 
-  // Glob patterns to match file names to be detected as components.
-  // When specified, the `dirs`, `extensions`, and `directoryAsNamespace` options will be ignored.
-  // If you want to exclude components being registered, use negative globs with leading `!`.
-  globs: ['src/components/*.{vue}'],
-
-  // search for subdirectories
-  deep: true,
-
-  // resolvers for custom components
-  resolvers: [],
-
-  // generate `components.d.ts` global declarations,
-  // also accepts a path for custom filename
-  // default: `true` if package typescript is installed
-  dts: false,
-
-  // Allow subdirectories as namespace prefix for components.
-  directoryAsNamespace: false,
-
-  // Collapse same prefixes (camel-sensitive) of folders and components
-  // to prevent duplication inside namespaced component name.
-  // works when `directoryAsNamespace: true`
-  collapseSamePrefixes: false,
-
-  // Subdirectory paths for ignoring namespace prefixes.
-  // works when `directoryAsNamespace: true`
-  globalNamespaces: [],
-
-  // auto import for directives
-  // default: `true` for Vue 3, `false` for Vue 2
-  // Babel is needed to do the transformation for Vue 2, it's disabled by default for performance concerns.
-  // To install Babel, run: `npm install -D @babel/parser`
-  directives: true,
-
-  // Transform path before resolving
-  importPathTransform: v => v,
-
-  // Allow for components to override other components with the same name
-  allowOverrides: false,
-
-  // Filters for transforming targets (components to insert the auto import)
-  // Note these are NOT about including/excluding components registered - use `globs` or `excludeNames` for that
-  include: [/\.vue$/, /\.vue\?vue/],
-  exclude: [/[\\/]node_modules[\\/]/, /[\\/]\.git[\\/]/, /[\\/]\.nuxt[\\/]/],
-
-  // Filters for component names that will not be imported
-  // Use for globally imported async components or other conflicts that the plugin cannot detect
-  excludeNames: [/^Async.+/],
-
-  // Vue version of project. It will detect automatically if not specified.
-  // Acceptable value: 2 | 2.7 | 3
-  version: 2.7,
-
-  // Only provide types of components in library (registered globally)
-  types: [] 
-            */
+            // Custom resolvers, compatible with `unplugin-vue-components`
+            // see https://github.com/antfu/unplugin-auto-import/pull/23/
+            resolvers: [],
         }),
     ],
     resolve: {
         alias: {
             '@': PATH_SRC,
             //'^': `${root}/src/${projectDir}/${projectCode}`,
-            //'^runtime': path.resolve(__dirname, './src/runtime'),
             //'^runtimejs': path.resolve(__dirname, './src/runtime/js'),
-            //'^runtime': `${root}/src/${projectDir}/${projectCode}/runtime`,
-            //'^runtimejs': `${root}/src/${projectDir}/${projectCode}/runtime/js`,
         },
     },
     build: {
         minify: true,
         emptyOutDir: true,
         outDir: '../dist',
+        rollupOptions: {
+            output: {
+                assetFileNames: (assetInfo) => {
+                    let extType = assetInfo.name.split('.').at(1);
+                    if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
+                        extType = 'img';
+                    } else if (/woff|woff2/i.test(extType)) {
+                        extType = 'font';
+                    }
+                    //return `${extType}/[name]-[hash][extname]`;
+                    return `${extType}/[name][extname]`;
+                },
+                //chunkFileNames: 'js/[name]-[hash].js',
+                //entryFileNames: 'js/[name]-[hash].js',
+                chunkFileNames: 'js/[name].js',
+                entryFileNames: '[name].js',
+            },
+        },
+        sourcemap: false,
+        // Reduce bloat from legacy polyfills.
+        target: 'esnext',
     },
     server: {
         port: 5123

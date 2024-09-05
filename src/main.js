@@ -32,10 +32,10 @@ window._userGet = () => {
 import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
-import { registerLayouts } from './layouts/register';
 
 const app = createApp(App);
-registerLayouts(app);
-
 app.use(router);
+
+app.use(createPinia());
+
 app.mount(document.body);
