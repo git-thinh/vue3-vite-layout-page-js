@@ -7,6 +7,7 @@
 </script>
 
 <template>
+    <HelloWorld />
     <h3>TheDashboardLayout</h3>
     <slot></slot>
 </template>
